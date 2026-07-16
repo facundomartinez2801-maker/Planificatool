@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanificaTool - Vista Previa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FDFBF7;
+            color: #1c1917;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e7e5e4;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: #0d9488;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #134e5e;
+        }
+
+        .progress {
+            display: none;
+            flex: 1;
+            margin: 0 2rem;
+        }
+
+        .progress.active {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .progress-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            background: #f5f5f4;
+            color: #a8a29e;
+        }
+
+        .progress-circle.active {
+            background: #0d9488;
+            color: white;
+        }
+
+        .progress-circle.done {
+            background: #d1d5db;
+            color: white;
+        }
+
+        .progress-separator {
+            width: 32px;
+            height: 1px;
+            background: #d6d3d1;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LOGIN SCREEN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .login-logo-icon {
+            background: #0d9488;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .login-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #1c1917;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #78716b;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #44403c;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d6d3d1;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0d9488;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #0d9488;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0f766e;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #78716b;
+        }
+
+        .toggle-auth a {
+            color: #0d9488;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* MATERIAL SELECTOR */
+        .carousel-container {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .carousel-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: #1c1917;
+            margin-bottom: 1rem;
+        }
+
+        .carousel-subtitle {
+            color: #78716b;
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .carousel {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .material-card {
+            background: white;
+            border: 2px solid #d6d3d1;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 280px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .material-card:hover {
+            border-color: #0d9488;
+            box-shadow: 0 10px 25px rgba(13, 148, 136, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .material-card.selected {
+            border-color: #0d9488;
+            background: white;
+            box-shadow: 0 20px 25px rgba(13, 148, 136, 0.2);
+            transform: scale(1.05);
+        }
+
+        .material-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            background: #f5f5f4;
+            border-radius: 50%;
+        }
+
+        .material-card.selected .material-icon {
+            background: #0d9488;
+            color: white;
+        }
+
+        .material-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1c1917;
+            margin-bottom: 0.75rem;
+        }
+
+        .material-desc {
+            color: #78716b;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .material-card.selected .material-title {
+            color: #0d9488;
+        }
+
+        .btn-container {
+            text-align: center;
+        }
+
+        .btn-large {
+            background: #0d9488;
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+        }
+
+        .btn-large:hover {
+            background: #0f766e;
+            box-shadow: 0 10px 15px rgba(13, 148, 136, 0.3);
+        }
+
+        /* CHAT SCREEN */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .chat-header {
+            background: white;
+            border: 1px solid #e7e5e4;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-title {
+            font-weight: bold;
+            color: #1c1917;
+        }
+
+        .chat-header-subtitle {
+            font-size: 0.75rem;
+            color: #a8a29e;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: #f5f5f4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 80%;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+            align-self: flex-end;
+        }
+
+        .message-bubble {
+            background: white;
+            border: 1px solid #d6d3d1;
+            border-radius: 1rem;
+            padding: 1rem;
+            color: #1c1917;
+            line-height: 1.5;
+        }
+
+        .message.user .message-bubble {
+            background: #0d9488;
+            color: white;
+            border: none;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .message.ia .message-bubble {
+            border-top-left-radius: 0.25rem;
+        }
+
+        .message-summary {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #92400e;
+            display: none;
+        }
+
+        .message.ia .message-summary {
+            display: block;
+        }
+
+        .chat-input-area {
+            background: white;
+            border: 1px solid #d6d3d1;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            border: none;
+            padding: 0.75rem;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .btn-send {
+            background: #0d9488;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-send:hover {
+            background: #0f766e;
+        }
+
+        /* DOCUMENT EDITOR */
+        .editor-toolbar {
+            background: white;
+            border-bottom: 1px solid #d6d3d1;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-radius: 0.75rem;
+        }
+
+        .editor-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-export {
+            background: white;
+            border: 1px solid #d6d3d1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 0.5rem;
+        }
+
+        .btn-export:hover {
+            background: #f5f5f4;
+        }
+
+        .btn-export.primary {
+            background: #0d9488;
+            color: white;
+            border: none;
+        }
+
+        .btn-export.primary:hover {
+            background: #0f766e;
+        }
+
+        .document {
+            background: white;
+            border: 1px solid #d6d3d1;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 600px;
+            font-family: Georgia, serif;
+            line-height: 1.8;
+        }
+
+        .document h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            border-bottom: 2px solid #d6d3d1;
+            padding-bottom: 1rem;
+            color: #0d9488;
+        }
+
+        .document h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #0d9488;
+        }
+
+        .document p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .document ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .document li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-nav {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 1px solid #d6d3d1;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-nav:hover {
+            background: #f5f5f4;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: white;
+            border: 1px solid #d6d3d1;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .plan-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .plan-card h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #1c1917;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-tag {
+            display: inline-block;
+            background: #d1fae5;
+            color: #047857;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-card p {
+            font-size: 0.875rem;
+            color: #78716b;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .plan-date {
+            font-size: 0.75rem;
+            color: #a8a29e;
+            margin-bottom: 1rem;
+        }
+
+        .plan-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .btn-small.primary {
+            background: #0d9488;
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #78716b;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">📚</div>
+            <div class="logo-text">PlanificaTool</div>
+        </div>
+        <div class="progress" id="progress">
+            <div class="progress-item">
+                <div class="progress-circle" id="circle1">1</div>
+                <span>Selección</span>
+            </div>
+            <div class="progress-separator"></div>
+            <div class="progress-item">
+                <div class="progress-circle" id="circle2">2</div>
+                <span>Idea</span>
+            </div>
+            <div class="progress-separator"></div>
+            <div class="progress-item">
+                <div class="progress-circle" id="circle3">3</div>
+                <span>Entrevista</span>
+            </div>
+            <div class="progress-separator"></div>
+            <div class="progress-item">
+                <div class="progress-circle" id="circle4">4</div>
+                <span>Resultado</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <span id="userEmail" style="display:none;"></span>
+            <button onclick="logout()" id="logoutBtn" style="display:none; background: none; border: none; cursor: pointer; font-size: 1.5rem;">🚪</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- SCREEN 1: LOGIN -->
+        <div class="screen active" id="screen-login">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="login-logo">
+                            <div class="login-logo-icon">📚</div>
+                        </div>
+                        <h1 class="login-title">PlanificaTool</h1>
+                        <p class="login-subtitle">Herramienta de planificación educativa con IA</p>
+                    </div>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="tu@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </form>
+                    <div class="toggle-auth">
+                        ¿No tienes cuenta? <a onclick="toggleAuth()">Regístrate aquí</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: MATERIAL SELECTOR -->
+        <div class="screen" id="screen-selector">
+            <div class="carousel-container">
+                <h1 class="carousel-title">¿Qué material querés preparar hoy?</h1>
+                <p class="carousel-subtitle">Selecciona el tipo de planificación que necesitas</p>
+
+                <div class="carousel">
+                    <div class="material-card" onclick="selectMaterial(this, 'secuencia')">
+                        <div class="material-icon">📚</div>
+                        <h3 class="material-title">Secuencia Didáctica</h3>
+                        <p class="material-desc">Sucesión de clases articuladas para enseñar un tema</p>
+                    </div>
+                    <div class="material-card" onclick="selectMaterial(this, 'anual')">
+                        <div class="material-icon">📅</div>
+                        <h3 class="material-title">Planificación Anual</h3>
+                        <p class="material-desc">Organización general de contenidos del año</p>
+                    </div>
+                    <div class="material-card selected" onclick="selectMaterial(this, 'clase')">
+                        <div class="material-icon">📄</div>
+                        <h3 class="material-title">Plan de Clases</h3>
+                        <p class="material-desc">Estructura detallada para una jornada</p>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn-large" onclick="goToIdea()">Confirmar y Continuar →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: IDEA FORM -->
+        <div class="screen" id="screen-idea">
+            <div style="max-width: 700px; margin: 0 auto;">
+                <button onclick="goBack()" style="background: none; border: none; color: #0d9488; font-weight: 600; cursor: pointer; margin-bottom: 2rem;">← Volver atrás</button>
+
+                <h1 style="font-size: 1.875rem; font-weight: bold; color: #1c1917; margin-bottom: 1rem;">Contame tu idea inicial</h1>
+                <p style="color: #78716b; margin-bottom: 2rem; font-size: 1.125rem;">
+                    Escribí con tus propias palabras qué te gustaría enseñar, a quiénes y si tenés algún objetivo en mente.
+                </p>
+
+                <div style="background: white; padding: 0.5rem; border-radius: 1.5rem; border: 1px solid #d6d3d1; margin-bottom: 2rem;">
+                    <textarea class="chat-textarea" id="ideaText" style="height: 250px; font-size: 1.125rem; padding: 1.5rem;" placeholder="Ej: Quiero armar un proyecto para chicos de 5to grado sobre las plantas nativas de nuestra región..."></textarea>
+                </div>
+
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 0.75rem; align-items: center; color: #047857;">
+                        <span style="font-size: 1.5rem;">💡</span>
+                        <p style="font-size: 0.875rem;">En el próximo paso conversaremos para refinar esta idea.</p>
+                    </div>
+                    <button onclick="goToChat()" class="btn-large" style="margin: 0;">Iniciar charla →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: CHAT -->
+        <div class="screen" id="screen-chat">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div>
+                        <div class="chat-header-title">🤖 Asistente Pedagógico</div>
+                        <div class="chat-header-subtitle">Diseñando tu planificación</div>
+                    </div>
+                    <button class="btn-large" onclick="goToDocument()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Generar Documento</button>
+                </div>
+
+                <div class="chat-messages">
+                    <div class="message ia">
+                        <div class="message-bubble">
+                            <div class="message-summary">Lo que entendí: Quieres una secuencia didáctica sobre plantas nativas para 5to grado</div>
+                            <p>¡Hola! 👋 Veo que querés crear una secuencia didáctica sobre plantas nativas para estudiantes de 5to grado, con énfasis en integrar ciencias naturales y prácticas del lenguaje.</p>
+                            <p style="margin-top: 0.5rem;">Para poder ayudarte mejor, ¿podrías decirme:</p>
+                            <p style="margin-top: 0.5rem;">• ¿Cuántas semanas tenés disponibles para esta secuencia?<br>• ¿Hay recursos específicos en tu escuela (huerta, patio, herbario)?</p>
+                        </div>
+                    </div>
+
+                    <div class="message user">
+                        <div class="message-bubble">Tenemos 4 semanas y contamos con un patio y algunos espacios verdes. Nos gustaría terminar con una huerta escolar funcional.</div>
+                    </div>
+
+                    <div class="message ia">
+                        <div class="message-bubble">
+                            <div class="message-summary">Propuesta: Estructura en 4 encuentros progresivos aprovechando recursos disponibles</div>
+                            <p>¡Excelente! Entonces te propongo organizar la secuencia en 4 encuentros, uno por semana:</p>
+                            <p style="margin-top: 0.5rem;"><strong>Semana 1:</strong> Exploración y observación<br><strong>Semana 2:</strong> Clasificación de especies<br><strong>Semana 3:</strong> Ciclo de vida y germinación<br><strong>Semana 4:</strong> Instalación de huerta escolar</p>
+                            <p style="margin-top: 0.5rem;">¿Te parece esta estructura o querés modificar algo?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <textarea class="chat-textarea" id="chatInput" placeholder="Escribí tu respuesta aquí..."></textarea>
+                    <button class="btn-send" onclick="sendMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: DOCUMENT EDITOR -->
+        <div class="screen" id="screen-document">
+            <div class="editor-toolbar">
+                <div>
+                    <span style="color: #0d9488; font-weight: 600;">✓ Autoguardado activado</span>
+                </div>
+                <div class="editor-buttons">
+                    <button class="btn-export" onclick="goToChat()">← Volver al chat</button>
+                    <button class="btn-export primary" onclick="alert('Descargando Word...')">📥 Descargar Word</button>
+                    <button class="btn-export primary" onclick="alert('Descargando PDF...')">📥 Descargar PDF</button>
+                </div>
+            </div>
+
+            <div class="document">
+                <h1>Secuencia Didáctica</h1>
+
+                <div style="color: #78716b; font-size: 0.9rem; margin: 1rem 0;">
+                    <p><strong>Docente:</strong> [Tu nombre]</p>
+                    <p><strong>Grado/Año:</strong> 5to Grado</p>
+                    <p><strong>Área/Materia:</strong> Ciencias Naturales + Prácticas del Lenguaje</p>
+                    <p><strong>Tema:</strong> Plantas nativas y huerta escolar</p>
+                    <p><strong>Duración:</strong> 4 semanas</p>
+                </div>
+
+                <h2>1. Fundamentación</h2>
+                <p>El presente proyecto busca acercar a los estudiantes al conocimiento científico a través de la observación directa del entorno natural. Partiendo de la curiosidad inherente de los niños en esta edad escolar, se propone una exploración activa que les permita identificar, clasificar y comprender el ciclo vital de las plantas nativas de nuestra región.</p>
+
+                <h2>2. Objetivos Generales</h2>
+                <ul>
+                    <li>Reconocer las partes principales de una planta y sus funciones en el ciclo vital.</li>
+                    <li>Identificar la diversidad de flora nativa en el entorno escolar y comunitario.</li>
+                    <li>Comprender la importancia de la biodiversidad local.</li>
+                    <li>Desarrollar habilidades de observación, registro y comunicación de datos.</li>
+                    <li>Fomentar actitudes de cuidado y respeto hacia el medio ambiente.</li>
+                </ul>
+
+                <h2>3. Cronograma de Actividades</h2>
+                <p><strong>Semana 1 - Exploración y Observación:</strong> Salida al patio para recolectar muestras. Documentación mediante dibujos y descripciones.</p>
+                <p><strong>Semana 2 - Clasificación:</strong> Organización de especímenes según características. Creación de herbario escolar.</p>
+                <p><strong>Semana 3 - Germinación:</strong> Experimento con semillas. Observación diaria del crecimiento.</p>
+                <p><strong>Semana 4 - Huerta Escolar:</strong> Instalación de canteros y siembra de plantas nativas.</p>
+
+                <p style="margin-top: 3rem; color: #a8a29e; font-style: italic;">Hacé clic en cualquier parte para editar este documento libremente</p>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-nav" onclick="goToDashboard()">← Volver al dashboard</button>
+                <button class="btn-nav" onclick="alert('Descargando Word...')">📥 Descargar Word</button>
+                <button class="btn-nav" onclick="alert('Descargando PDF...')">📥 Descargar PDF</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: DASHBOARD -->
+        <div class="screen" id="screen-dashboard">
+            <div style="background: white; border-bottom: 1px solid #d6d3d1; margin: -2rem -2rem 2rem -2rem; padding: 2rem;">
+                <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="logo-icon">📚</div>
+                        <h1 style="font-size: 2rem; font-weight: bold; color: #1c1917;">Mis Planificaciones</h1>
+                    </div>
+                    <button class="btn-large" onclick="goToSelector()">+ Nueva Planificación</button>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="plan-card">
+                    <h3>Secuencia Didáctica - Plantas Nativas</h3>
+                    <span class="plan-tag">secuencia</span>
+                    <p>Proyecto para 5to grado sobre biodiversidad local con huerta escolar. Incluye actividades de observación, clasificación y experimentación con plantas nativas.</p>
+                    <div class="plan-date">Creada: 15/07/2024</div>
+                    <div class="plan-actions">
+                        <button class="btn-small primary" onclick="goToDocument()">👁️ Ver</button>
+                        <button class="btn-small secondary" onclick="alert('Eliminando...')">🗑️</button>
+                    </div>
+                </div>
+
+                <div class="plan-card">
+                    <h3>Plan de Clase - Partes de la Planta</h3>
+                    <span class="plan-tag">clase</span>
+                    <p>Clase interactiva para identificar las partes de una planta y sus funciones. Incluye actividades prácticas con especímenes del entorno.</p>
+                    <div class="plan-date">Creada: 10/07/2024</div>
+                    <div class="plan-actions">
+                        <button class="btn-small primary" onclick="goToDocument()">👁️ Ver</button>
+                        <button class="btn-small secondary" onclick="alert('Eliminando...')">🗑️</button>
+                    </div>
+                </div>
+
+                <div class="plan-card">
+                    <h3>Proyecto Educativo - Huerta Sostenible</h3>
+                    <span class="plan-tag">proyecto</span>
+                    <p>Propuesta interdisciplinaria que integra ciencias naturales, tecnología y educación ambiental. Objetivo: crear huerta sostenible en la escuela.</p>
+                    <div class="plan-date">Creada: 05/07/2024</div>
+                    <div class="plan-actions">
+                        <button class="btn-small primary" onclick="goToDocument()">👁️ Ver</button>
+                        <button class="btn-small secondary" onclick="alert('Eliminando...')">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScreen = 'login';
+        let currentUser = null;
+
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${screenName}`).classList.add('active');
+            currentScreen = screenName;
+
+            // Update progress bar
+            const showProgress = ['selector', 'idea', 'chat', 'document'].includes(screenName);
+            document.getElementById('progress').classList.toggle('active', showProgress);
+
+            if (screenName === 'selector') {
+                updateProgressCircles(1);
+            } else if (screenName === 'idea') {
+                updateProgressCircles(2);
+            } else if (screenName === 'chat') {
+                updateProgressCircles(3);
+            } else if (screenName === 'document') {
+                updateProgressCircles(4);
+            }
+
+            // Show/hide user info
+            const showUser = ['dashboard', 'selector', 'idea', 'chat', 'document'].includes(screenName);
+            document.getElementById('userEmail').style.display = showUser ? 'inline' : 'none';
+            document.getElementById('logoutBtn').style.display = showUser ? 'inline' : 'none';
+        }
+
+        function updateProgressCircles(active) {
+            for (let i = 1; i <= 4; i++) {
+                const circle = document.getElementById(`circle${i}`);
+                circle.classList.remove('active', 'done');
+                if (i < active) circle.classList.add('done');
+                else if (i === active) circle.classList.add('active');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            currentUser = 'Docente Demo';
+            document.getElementById('userEmail').textContent = currentUser;
+            showScreen('dashboard');
+        }
+
+        function toggleAuth() {
+            alert('En la versión real, aquí cambiaría a formulario de registro');
+        }
+
+        function logout() {
+            currentUser = null;
+            showScreen('login');
+        }
+
+        function selectMaterial(card, material) {
+            document.querySelectorAll('.material-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+
+        function goToSelector() {
+            showScreen('selector');
+        }
+
+        function goToIdea() {
+            showScreen('idea');
+        }
+
+        function goToChat() {
+            showScreen('chat');
+        }
+
+        function goToDocument() {
+            showScreen('document');
+        }
+
+        function goToDashboard() {
+            showScreen('dashboard');
+        }
+
+        function goBack() {
+            showScreen('selector');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            if (input.value.trim()) {
+                alert('Mensaje enviado: ' + input.value + '\n\n(En la versión real, Claude respondería aquí)');
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
